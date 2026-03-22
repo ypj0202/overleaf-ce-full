@@ -1,4 +1,4 @@
-name: Build Overleaf Full Image (GHCR)
+name: Build Overleaf Full Image
 
 on:
 push:
@@ -6,30 +6,26 @@ branches:
 - main
 workflow_dispatch:
 schedule:
-- cron: "0 3 1 * *"  # monthly
+- cron: "0 3 1 * *"
 
 jobs:
 build:
 runs-on: ubuntu-latest
+permissions:
+contents: read
+packages: write
 
 ```
-permissions:
-  contents: read
-  packages: write
-
 steps:
-  - name: Checkout
-    uses: actions/checkout@v4
+  - uses: actions/checkout@v4
 
-  - name: Log in to GHCR
-    uses: docker/login-action@v3
+  - uses: docker/login-action@v3
     with:
       registry: ghcr.io
       username: ${{ github.actor }}
       password: ${{ secrets.GITHUB_TOKEN }}
 
-  - name: Extract metadata
-    id: meta
+  - id: meta
     uses: docker/metadata-action@v5
     with:
       images: ghcr.io/${{ github.repository }}/overleaf-full
@@ -37,15 +33,11 @@ steps:
         type=raw,value=latest
         type=sha
 
-  - name: Set up Docker Buildx
-    uses: docker/setup-buildx-action@v3
+  - uses: docker/setup-buildx-action@v3
 
-  - name: Build and push
-    uses: docker/build-push-action@v5
+  - uses: docker/build-push-action@v5
     with:
       context: .
       push: true
       tags: ${{ steps.meta.outputs.tags }}
-      cache-from: type=gha
-      cache-to: type=gha,mode=max
 ```
