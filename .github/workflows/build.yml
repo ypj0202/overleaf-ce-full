@@ -2,10 +2,11 @@ name: Build Overleaf Full Image (GHCR)
 
 on:
 push:
-branches: [ "main" ]
+branches:
+- main
 workflow_dispatch:
 schedule:
-- cron: "0 3 1 * *"  # monthly: 1st day of month at 03:00 UTC
+- cron: "0 3 1 * *"  # monthly
 
 jobs:
 build:
